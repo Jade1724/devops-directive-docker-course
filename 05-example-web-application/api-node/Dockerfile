@@ -11,8 +11,11 @@ ENV NODE_ENV production
 COPY package*.json ./
 
 # npm clean install, only install exact version specified in lock file. 
-# only install production dependencies, not dev dependencies. 
-RUN npm ci --only=production
+# only install production dependencies, not dev dependencies.
+# specify cache space to store node modules to avoid download from the public registry/
+RUN --mount=type=cache,target=/usr/src/app/.npm \
+  npm set cache /usr/src/app/.npm && \
+  npm ci --only=production
 
 # Run as a non root user to give less permissions. node image has a node user.
 USER node
